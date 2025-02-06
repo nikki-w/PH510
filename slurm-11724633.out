@@ -1,0 +1,29 @@
+===================================================================================
+SLURM Job ID:            11724633
+Submit time:             Thu Feb 06 17:22:25 GMT 2025 (Unix Epoch time: 1738862545)
+Start time:              Thu Feb 06 17:22:38 GMT 2025 (Unix Epoch time: 1738862558)
+No. nodes:               1
+No. tasks:               16
+Job name:                assignment1
+Account:                 teaching
+QoS:                     teaching
+Partition (queue):       teaching-gpu
+Submit directory:        /users/xeb20122/PH510
+Script name:             /users/xeb20122/PH510/jobscript.sh
+Master node:             weegpu5
+Nodes used:              weegpu5
+Task distribution:       block:block
+===================================================================================
+
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+pi computed in 113.103 sec.
+Pi is 3.14159265358986.
+===================================================================================
+SLURM job 11724633 ended:     Thu Feb 06 17:22:53 GMT 2025 (Unix Epoch time: 1738862573)
+This is an estimated end time using the 'date' command from node weegpu5.hpc.strath.ac.uk
+For accurate timings, use 'sacct -j 11724633 -X --format=Submit,Start,End,Elapsed'
+======================================================================================
+/tmp/slurmd/job11724633/slurm_script: line 55: ------------------------------------------------------: command not found
