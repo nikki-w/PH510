@@ -19,3 +19,11 @@ Task distribution:       block:block
 --------------------------------------------------------------------
 Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 
+pi computed in 68.451 sec.
+Pi is 3.14159265358979.
+===================================================================================
+SLURM job 11724631 ended:     Thu Feb 06 17:18:09 GMT 2025 (Unix Epoch time: 1738862289)
+This is an estimated end time using the 'date' command from node weegpu5.hpc.strath.ac.uk
+For accurate timings, use 'sacct -j 11724631 -X --format=Submit,Start,End,Elapsed'
+======================================================================================
+/tmp/slurmd/job11724631/slurm_script: line 55: ------------------------------------------------------: command not found
