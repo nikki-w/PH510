@@ -44,6 +44,7 @@ module add miniconda/3.12.8
 #------------------------------------------------------
 
 # Modify the line below to run your program
+pylint --extension-pkg-allow-list=mpi4py.MPI assignment1.py 
 mpiexec -n 16 python3 ./assignment1.py
 
 #======================================================
