@@ -1,0 +1,50 @@
+This is a rough description of the changes/choices made to 
+create the assignment1.py file and how they differ from the naive file.
+
+The rough idea is as follows:
+I took a different approach from the naïve code and wanted to create a script 
+that ‘cut up, the calculation of the integral into ‘chunks’ and send these chunks 
+to different processes- almost as if calculating an increment of the full integral.
+Once these chunks were calculated, I wanted to send this back to rank 0 and sum 
+them back together, giving an overall estimate of pi using the mid-point rule (mpr) 
+integration.
+
+import files:
+I imported time as well as mpi4py to determine how long it takes to get my estimate of pi
+
+Alteration of N:
+I increased the number of tasks/divisions to 3000000000
+I had initially tried lower values for N (1000000000, 2500000000, 3000000000), however these
+produced less accurate values for pi (right only to 13 significant figures)
+
+Dividing of tasks:
+I used 'divmod' to divide my calculation into sub-tasks. This returns a quotient value, quo, and 
+its remainder, rem. In the case of my code N is divided by the number of processes, nprocs.
+I then distributed the tasks evenly with each process getting a (quotient + 1) and the remainder 
+getting sent to a free process
+
+start_integ and end_integ:
+This determines the start and end points for the integration for each process, this basically
+tells the process at what sub value to start from and end at.
+
+INTEG = [(start_integ[i], end_integ[i]) for i in range(nprocs)]:
+Gives each process its respective start and end indexes for the caluclation
+
+comm.scatter:
+This scatters the split up indexes to be used in the calculations amongst the processes.
+Essentially, this is what divides the workload.
+
+PI for j in range loop:
+This is where the mid point rule comes into place, where each process calculates its respective
+'chunks' of the integration as assigned by the index given through the INTEG scatter.
+
+comm.reduce:
+This collects the calculated integral 'chunks' and sums them all to achieve one complete estimation 
+for pi
+
+if rank == 0:
+All of the values are then printed and the time counter is stopped to allow for the determination
+of how long the calculation takes.
+
+
+
