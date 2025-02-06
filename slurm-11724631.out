@@ -1,0 +1,21 @@
+===================================================================================
+SLURM Job ID:            11724631
+Submit time:             Thu Feb 06 17:17:38 GMT 2025 (Unix Epoch time: 1738862258)
+Start time:              Thu Feb 06 17:18:38 GMT 2025 (Unix Epoch time: 1738862318)
+No. nodes:               1
+No. tasks:               16
+Job name:                assignment1
+Account:                 teaching
+QoS:                     teaching
+Partition (queue):       teaching-gpu
+Submit directory:        /users/xeb20122/PH510
+Script name:             /users/xeb20122/PH510/jobscript.sh
+Master node:             weegpu5
+Nodes used:              weegpu5
+Task distribution:       block:block
+===================================================================================
+
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
