@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
+"""Python file that imports class with the use 
+of performing operations with vectors"""
 import assignment2_class as vect
-import math
 
 v1 = vect.Vector(2, 10, 7)
 print("First vector", v1)
