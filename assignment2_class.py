@@ -54,8 +54,8 @@ class Spherical_Polar(Vector):
         r = math.sqrt(self.a**2 + self.b**2 + self.c**2)
         theta = math.acos(self.c / r)
         phi = math.atan(self.b / self.a)
-        return r, theta, phi
+        return r, math.degrees(theta), math.degrees(phi)
 
     def __str__(self):
         r, theta, phi = self.spherical_conv()
-        return f"Spherical Polar vector:(r={r}, theta={theta}, phi={phi})"
+        return f"Vector:(r={r}, theta={theta}, phi={phi})"
