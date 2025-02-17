@@ -35,3 +35,27 @@ class Vector:
         return Vector(((self.b * other.c) - (self.c * other.b)),
 	((self.c * other.a) - (self.a * other.c)),
 	((self.a * other.b) - (self.b * other.a)))
+
+
+
+
+class Spherical_Polar(Vector):
+    def __init__(self, r=0, theta=0, phi=0):
+        self.a = r * math.sin(theta) * math.cos(phi)
+        self.b = r * math.sin(theta) * math.sin(phi)
+        self.c = r * math.cos(theta)
+        super().__init__(self.a, self.b, self.c)
+
+        self.r = r
+        self.theta = theta
+        self.phi = phi
+
+    def spherical_conv(self):
+        r = math.sqrt(self.a**2 + self.b**2 + self.c**2)
+        theta = math.acos(self.c / r)
+        phi = math.atan(self.b / self.a)
+        return r, theta, phi
+
+    def __str__(self):
+        r, theta, phi = self.spherical_conv()
+        return f"Spherical Polar vector:(r={r}, theta={theta}, phi={phi})"
