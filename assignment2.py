@@ -23,13 +23,13 @@ print("Cross product of two vectors", v1.cross(v2))
 print("\b")
 print("Spherical Polar:")
 
-v1_sp = vect.Spherical_Polar.spherical_conv(v1)
+v1_sp = vect.SphericalPolar.spherical_conv(v1)
 print("First vector", v1_sp)
 
-v2_sp = vect.Spherical_Polar.spherical_conv(v2)
+v2_sp = vect.SphericalPolar.spherical_conv(v2)
 print("Second vector", v2_sp)
 
-#print("Sum of vectors:", v1_sp + v2_sp)
+print("Sum of vectors:", v1_sp + v2_sp)
 #print("Subtraction of vectors", v1_sp - v2_sp)
 #print("Magnitude of first vector", v1_sp.norm())
 #print("Dot product of two vectors", v1_sp.dot(v2))
