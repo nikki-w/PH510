@@ -39,11 +39,14 @@ class Vector:
 
 
 
-class Spherical_Polar(Vector):
+class SphericalPolar(Vector):
+    """Child class that inherits parent class (Vector) to convert from cartesian 
+    coordinates to spherical olar coordinates"""
     def __init__(self, r=0, theta=0, phi=0):
         self.a = r * math.sin(theta) * math.cos(phi)
         self.b = r * math.sin(theta) * math.sin(phi)
         self.c = r * math.cos(theta)
+        # Call __init__ from Vector
         super().__init__(self.a, self.b, self.c)
 
         self.r = r
@@ -51,6 +54,7 @@ class Spherical_Polar(Vector):
         self.phi = phi
 
     def spherical_conv(self):
+        """Defines r, theta and phi (spherical polar coordinates)"""
         r = math.sqrt(self.a**2 + self.b**2 + self.c**2)
         theta = math.acos(self.c / r)
         phi = math.atan(self.b / self.a)
