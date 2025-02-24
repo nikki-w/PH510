@@ -1,65 +1,57 @@
 #!/usr/bin/env python3
-"""Python file that creates a class that can be 
+"""Python file that creates x class that can be 
 imported to compute vector operations"""
 import math
 
+
+# Create class for task 1
 class Vector:
     """Object orientated vector creation"""
-    def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
 
     def __str__(self):
         """Makes vectors printable"""
-        return f"Vector: ({self.a:.2f}, {self.b:.2f}, {self.c:.2f})"
+        return f"Vector: ({self.x:.2f}, {self.y:.2f}, {self.z:.2f})"
 
     def __add__(self, other):
         """Adds vector"""
-        return Vector(self.a + other.a, self.b + other.b, self.c + other.c)
+        return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __sub__(self, other):
         """subtracts vector"""
-        return Vector(self.a - other.a, self.b - other.b, self.c - other.c)
+        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def norm(self):
         """Calculates the magnitude of vector"""
-        return math.sqrt(self.a**2 + self.b**2 + self.c**2)
+        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     def dot(self, other):
         """Calculates the salar dot product"""
-        return ((self.a * other.a) + (self.b * other.b) + (self.c * other.c))
+        return ((self.x * other.x) + (self.y * other.y) + (self.z * other.z))
 
     def cross(self, other):
         """Calculates the vector cross product of two vectors"""
-        return Vector(((self.b * other.c) - (self.c * other.b)),
-	((self.c * other.a) - (self.a * other.c)),
-	((self.a * other.b) - (self.b * other.a)))
+        return Vector(((self.y * other.z) - (self.z * other.y)),
+	((self.z * other.x) - (self.x * other.z)),
+	((self.x * other.y) - (self.y * other.x)))
+
+    def cartesian_to_spherical(self):
+        """Converts cartesian coordinates to spherical polar"""
+        r = math.sqrt(self.x**2 + self.y**2 + self.z**2)
+        theta = math.acos(self.z / r)
+        phi = math.atan2(self.y, self.z)
+        return r, theta, phi
+
+    def spherical_to_cartesian(self):
+        """Converts spherical polar coordinates to cartesian"""
+        x = r * math.sin(theta) * math.cos(phi)
+        y = r* math.sin(theta) * math.sin(phi)
+        z = r * math.cos(theta)
+        return x, y, z
 
 
 
 
-class SphericalPolar(Vector):
-    """Child class that inherits parent class (Vector) to convert from cartesian 
-    coordinates to spherical olar coordinates"""
-    def __init__(self, r=0, theta=0, phi=0):
-        self.a = r * math.sin(theta) * math.cos(phi)
-        self.b = r * math.sin(theta) * math.sin(phi)
-        self.c = r * math.cos(theta)
-        # Call __init__ from Vector
-        super().__init__(self.a, self.b, self.c)
-
-        self.r = r
-        self.theta = theta
-        self.phi = phi
-
-    def spherical_conv(self):
-        """Defines r, theta and phi (spherical polar coordinates)"""
-        r = math.sqrt(self.a**2 + self.b**2 + self.c**2)
-        theta = math.acos(self.c / r)
-        phi = math.atan(self.b / self.a)
-        return r, math.degrees(theta), math.degrees(phi)
-
-    def __str__(self):
-        r, theta, phi = self.spherical_conv()
-        return f"Vector:(r={r}, theta={theta}, phi={phi})"
