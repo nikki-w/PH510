@@ -42,7 +42,7 @@ class Vector:
         """Converts cartesian coordinates to spherical polar"""
         r = math.sqrt(self.x**2 + self.y**2 + self.z**2)
         theta = math.acos(self.z / r)
-        phi = math.atan2(self.y, self.z)
+        phi = math.atan2(self.y, self.x)
         return r, theta, phi
 
     def spherical_to_cartesian(self):
