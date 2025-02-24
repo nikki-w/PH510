@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Python file that imports class with the use 
 of performing operations with vectors"""
-import math
 import assignment2_class as vect
 
 print("\b")
@@ -32,6 +31,3 @@ print("Subtraction of vectors", v1_sp - v2_sp)
 print("Magnitude of first vector", v1_sp.norm())
 print("Dot product of two vectors", v1_sp.dot(v2_sp))
 print("Cross product of two vectors", v1_sp.cross(v2_sp))
-
-
-
