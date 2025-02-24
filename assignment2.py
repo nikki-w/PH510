@@ -19,17 +19,19 @@ print("Magnitude of first vector", v1.norm())
 print("Dot product of two vectors", v1.dot(v2))
 print("Cross product of two vectors", v1.cross(v2))
 
-
-
 print("\b")
 print("Spherical Polar:")
-#v1_sp = vect.SphericalPolar(5, math.pi/3, math.pi/2)
-#print("First vector:", v1_sp)
+v1_sp = vect.SphericalPolar.cartesian_to_spherical(v1)
+print("First vector:", v1_sp)
 
-#v2_sp = vect.SphericalPolar(2, math.pi/5, math.pi/3)
-#print("Second vector:", v2_sp)
+v2_sp = vect.SphericalPolar.cartesian_to_spherical(v2)
+print("Second vector:", v2_sp)
 
-#print("Sum of vectors:", v1_sp + v2_sp)
+print("Sum of vectors:", v1_sp + v2_sp)
+print("Subtraction of vectors", v1_sp - v2_sp)
+print("Magnitude of first vector", v1_sp.norm())
+print("Dot product of two vectors", v1_sp.dot(v2_sp))
+print("Cross product of two vectors", v1_sp.cross(v2_sp))
 
 
 
