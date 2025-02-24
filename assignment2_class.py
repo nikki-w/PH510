@@ -46,10 +46,14 @@ class Vector:
         return SphericalPolar(r, theta, phi)
 
 class SphericalPolar(Vector):
+    """Spherical polar"""
     def __init__(self, r, theta, phi):
+        """Initialise"""
         self.r = r
         self.theta = theta
         self.phi = phi
+        # Call __init__ from Vector
+        super().__init__(self.r, self.theta, self.phi)
 
     def __str__(self):
         """Makes vector printable"""
