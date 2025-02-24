@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Python file that imports class with the use 
 of performing operations with vectors"""
+import math
 import assignment2_class as vect
 
 print("\b")
@@ -22,15 +23,13 @@ print("Cross product of two vectors", v1.cross(v2))
 
 print("\b")
 print("Spherical Polar:")
+#v1_sp = vect.SphericalPolar(5, math.pi/3, math.pi/2)
+#print("First vector:", v1_sp)
 
-v1_sp = vect.SphericalPolar.spherical_conv(v1)
-print("First vector", v1_sp)
+#v2_sp = vect.SphericalPolar(2, math.pi/5, math.pi/3)
+#print("Second vector:", v2_sp)
 
-v2_sp = vect.SphericalPolar.spherical_conv(v2)
-print("Second vector", v2_sp)
+#print("Sum of vectors:", v1_sp + v2_sp)
 
-print("Sum of vectors:", v1_sp + v2_sp)
-#print("Subtraction of vectors", v1_sp - v2_sp)
-#print("Magnitude of first vector", v1_sp.norm())
-#print("Dot product of two vectors", v1_sp.dot(v2))
-#print("Cross product of two vectors", v1_sp.cross(v2))
+
+
