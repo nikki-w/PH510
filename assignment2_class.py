@@ -40,18 +40,48 @@ class Vector:
 
     def cartesian_to_spherical(self):
         """Converts cartesian coordinates to spherical polar"""
-        r = math.sqrt(self.x**2 + self.y**2 + self.z**2)
+        r = self.norm()
         theta = math.acos(self.z / r)
-        phi = math.atan2(self.y, self.x)
-        return r, theta, phi
+        phi = math.atan(self.y / self.x)
+        return SphericalPolar(r, theta, phi)
+
+class SphericalPolar(Vector):
+    def __init__(self, r, theta, phi):
+        self.r = r
+        self.theta = theta
+        self.phi = phi
+
+    def __str__(self):
+        """Makes vector printable"""
+        return f"Spherical Polar: ({self.r:.2f}, {self.theta:.2f}, {self.phi:.2f})"
 
     def spherical_to_cartesian(self):
-        """Converts spherical polar coordinates to cartesian"""
-        x = r * math.sin(theta) * math.cos(phi)
-        y = r* math.sin(theta) * math.sin(phi)
-        z = r * math.cos(theta)
-        return x, y, z
+        """Converts spherical polar to cartesian"""
+        x = self.r * math.sin(self.theta) * math.cos(self.phi)
+        y = self.r * math.sin(self.theta) * math.sin(self.phi)
+        z = self.r * math.cos(self.theta)
+        return Vector(x, y, z)
 
+    def __add__(self, other):
+        """Adds two spherical polar vectors"""
+        add_sp = self.spherical_to_cartesian() + other.spherical_to_cartesian()
+        return add_sp.cartesian_to_spherical()
 
+    def __sub__(self, other):
+        """Adds two spherical polar vectors"""
+        sub_sp = self.spherical_to_cartesian() - other.spherical_to_cartesian()
+        return sub_sp.cartesian_to_spherical()
 
+    def norm(self):
+        """Calculates the magnitude of vector"""
+        return self.r
 
+    def dot(self, other):
+        """Calculates the salar dot product"""
+        dot_sp = self.spherical_to_cartesian().dot(other.spherical_to_cartesian())
+        return dot_sp
+
+    def cross(self, other):
+        """Calculates the salar dot product"""
+        cross_sp = self.spherical_to_cartesian().cross(other.spherical_to_cartesian())
+        return cross_sp.cartesian_to_spherical()
