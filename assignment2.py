@@ -145,3 +145,107 @@ triangle4_angle_c = math.acos((triangle4_ca.dot(triangle4_cb)) /
 (triangle4_ca.norm() * triangle4_cb.norm()))
 print("Triangle 4: Angle between CA and CB =", math.degrees(triangle4_angle_c))
 
+print("c)")
+#Triangle 1
+triangle1_a_sp = vect.SphericalPolar(0, math.radians(0), math.radians(0))
+triangle1_b_sp = vect.SphericalPolar(1, math.radians(0), math.radians(0))
+triangle1_c_sp = vect.SphericalPolar(1, math.radians(90), math.radians(0))
+triangle1_ab_sp = triangle1_b_sp - triangle1_a_sp
+triangle1_ac_sp = triangle1_c_sp - triangle1_a_sp
+triangle1_ba_sp = triangle1_a_sp - triangle1_b_sp
+triangle1_bc_sp = triangle1_c_sp - triangle1_b_sp
+triangle1_ca_sp = triangle1_a_sp - triangle1_c_sp
+triangle1_cb_sp = triangle1_b_sp - triangle1_c_sp
+# Area
+triangle1_area_sp = 0.5 * (triangle1_ab_sp.cross(triangle1_ac_sp)).norm()
+print("Area of Triangle 1 =", triangle1_area_sp)
+# Angle AB and AC
+triangle1_angle_a_sp = math.acos((triangle1_ab_sp.dot(triangle1_ac_sp)) /
+(triangle1_ab_sp.norm() * triangle1_ac_sp.norm()))
+print("Triangle 1: Angle between AB and AC =", math.degrees(triangle1_angle_a_sp))
+# Angle BA and BC
+triangle1_angle_b_sp = math.acos((triangle1_ba_sp.dot(triangle1_bc_sp)) /
+(triangle1_ba_sp.norm() * triangle1_bc_sp.norm()))
+print("Triangle 1: Angle between BA and BC =", math.degrees(triangle1_angle_b_sp))
+# Angle CA and CB
+triangle1_angle_c_sp = math.acos((triangle1_ca_sp.dot(triangle1_cb_sp)) /
+(triangle1_ca_sp.norm() * triangle1_cb_sp.norm()))
+print("Triangle 1: Angle between CA and CB =", math.degrees(triangle1_angle_c_sp))
+
+#Triangle 2
+triangle2_a_sp = vect.SphericalPolar(1, math.radians(0), math.radians(0))
+triangle2_b_sp = vect.SphericalPolar(1, math.radians(90), math.radians(0))
+triangle2_c_sp = vect.SphericalPolar(1, math.radians(90), math.radians(180))
+triangle2_ab_sp = triangle2_b_sp - triangle2_a_sp
+triangle2_ac_sp = triangle2_c_sp - triangle2_a_sp
+triangle2_ba_sp = triangle2_a_sp - triangle2_b_sp
+triangle2_bc_sp = triangle2_c_sp - triangle2_b_sp
+triangle2_ca_sp = triangle2_a_sp - triangle2_c_sp
+triangle2_cb_sp = triangle2_b_sp - triangle2_c_sp
+triangle2_area_sp = 0.5 * (triangle2_ba_sp.cross(triangle2_bc_sp)).norm()
+print("Area of Triangle 2 =", triangle2_area_sp)
+# Angle AB and AC
+triangle2_angle_a_sp = math.acos((triangle2_ab_sp.dot(triangle2_ac_sp)) /
+(triangle2_ab_sp.norm() * triangle2_ac_sp.norm()))
+print("Triangle 2: Angle between AB and AC =", math.degrees(triangle2_angle_a_sp))
+# Angle BA and BC
+triangle2_angle_b_sp = math.acos((triangle2_ba_sp.dot(triangle2_bc_sp)) /
+(triangle2_ba_sp.norm() * triangle2_bc_sp.norm()))
+print("Triangle 2: Angle between BA and BC =", math.degrees(triangle2_angle_b_sp))
+# Angle CA and CB
+triangle2_angle_c_sp = math.acos((triangle2_ca_sp.dot(triangle2_cb_sp)) /
+(triangle2_ca_sp.norm() * triangle2_cb_sp.norm()))
+print("Triangle 2: Angle between CA and CB =", math.degrees(triangle2_angle_c_sp))
+
+
+#Triangle 3
+triangle3_a_sp = vect.SphericalPolar(0, math.radians(0), math.radians(0))
+triangle3_b_sp = vect.SphericalPolar(2, math.radians(0), math.radians(0))
+triangle3_c_sp = vect.SphericalPolar(2, math.radians(90), math.radians(0))
+triangle3_ab_sp = triangle3_b_sp - triangle3_a_sp
+triangle3_ac_sp = triangle3_c_sp - triangle3_a_sp
+triangle3_ba_sp = triangle3_a_sp - triangle3_b_sp
+triangle3_bc_sp = triangle3_c_sp - triangle3_b_sp
+triangle3_ca_sp = triangle3_a_sp - triangle3_c_sp
+triangle3_cb_sp = triangle3_b_sp - triangle3_c_sp
+# Area
+triangle3_area_sp = 0.5 * (triangle3_ab_sp.cross(triangle3_ac_sp)).norm()
+print("Area of Triangle 3 =", triangle3_area_sp)
+# Angle AB and AC
+triangle3_angle_a_sp = math.acos((triangle3_ab_sp.dot(triangle3_ac_sp)) /
+(triangle3_ab_sp.norm() * triangle3_ac_sp.norm()))
+print("Triangle 3: Angle between AB and AC =", math.degrees(triangle3_angle_a_sp))
+# Angle BA and BC
+triangle3_angle_b_sp = math.acos((triangle3_ba_sp.dot(triangle3_bc_sp)) /
+(triangle3_ba_sp.norm() * triangle3_bc_sp.norm()))
+print("Triangle 3: Angle between BA and BC =", math.degrees(triangle3_angle_b_sp))
+# Angle CA and CB
+triangle3_angle_c_sp = math.acos((triangle3_ca_sp.dot(triangle3_cb_sp)) /
+(triangle3_ca_sp.norm() * triangle3_cb_sp.norm()))
+print("Triangle 3: Angle between CA and CB =", math.degrees(triangle3_angle_c_sp))
+
+#Triangle 4
+triangle4_a_sp = vect.SphericalPolar(1, math.radians(90), math.radians(0))
+triangle4_b_sp = vect.SphericalPolar(1, math.radians(90), math.radians(180))
+triangle4_c_sp = vect.SphericalPolar(1, math.radians(90), math.radians(270))
+triangle4_ab_sp = triangle4_b_sp - triangle4_a_sp
+triangle4_ac_sp = triangle4_c_sp - triangle4_a_sp
+triangle4_ba_sp = triangle4_a_sp - triangle4_b_sp
+triangle4_bc_sp = triangle4_c_sp - triangle4_b_sp
+triangle4_ca_sp = triangle4_a_sp - triangle4_c_sp
+triangle4_cb_sp = triangle4_b_sp - triangle4_c_sp
+# Area
+triangle4_area_sp = 0.5 * (triangle4_ab_sp.cross(triangle4_ac_sp)).norm()
+print("Area of Triangle 4 =", triangle4_area_sp)
+# Angle AB and AC
+triangle4_angle_a_sp = math.acos((triangle4_ab_sp.dot(triangle4_ac_sp)) /
+(triangle4_ab_sp.norm() * triangle4_ac_sp.norm()))
+print("Triangle 4: Angle between AB and AC =", math.degrees(triangle4_angle_a_sp))
+# Angle BA and BC
+triangle4_angle_b_sp = math.acos((triangle4_ba_sp.dot(triangle4_bc_sp)) /
+(triangle4_ba_sp.norm() * triangle4_bc_sp.norm()))
+print("Triangle 4: Angle between BA and BC =", math.degrees(triangle4_angle_b_sp))
+# Angle CA and CB
+triangle4_angle_c_sp = math.acos((triangle4_ca_sp.dot(triangle4_cb_sp)) /
+(triangle4_ca_sp.norm() * triangle4_cb_sp.norm()))
+print("Triangle 4: Angle between CA and CB =", math.degrees(triangle4_angle_c_sp))
