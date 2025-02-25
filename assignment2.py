@@ -177,12 +177,12 @@ triangle2_a_sp = vect.SphericalPolar(1, math.radians(0), math.radians(0))
 triangle2_b_sp = vect.SphericalPolar(1, math.radians(90), math.radians(0))
 triangle2_c_sp = vect.SphericalPolar(1, math.radians(90), math.radians(180))
 triangle2_ab_sp = triangle2_b_sp - triangle2_a_sp
-triangle2_ac_sp = triangle2_c_sp - triangle2_a_sp
+triangle2_ac_sp = triangle2_a_sp - triangle2_c_sp
 triangle2_ba_sp = triangle2_a_sp - triangle2_b_sp
 triangle2_bc_sp = triangle2_c_sp - triangle2_b_sp
 triangle2_ca_sp = triangle2_a_sp - triangle2_c_sp
 triangle2_cb_sp = triangle2_b_sp - triangle2_c_sp
-triangle2_area_sp = 0.5 * (triangle2_ba_sp.cross(triangle2_bc_sp)).norm()
+triangle2_area_sp = 0.5 * (triangle2_ab_sp.cross(triangle2_ac_sp)).norm()
 print("Area of Triangle 2 =", triangle2_area_sp)
 # Angle AB and AC
 triangle2_angle_a_sp = math.acos((triangle2_ab_sp.dot(triangle2_ac_sp)) /
