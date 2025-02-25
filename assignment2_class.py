@@ -6,7 +6,7 @@ import math
 
 # Create class for task 1
 class Vector:
-    """Object orientated vector creation"""
+    """Creates vectors in cartesian coordinates and performs operations"""
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -21,7 +21,7 @@ class Vector:
         return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __sub__(self, other):
-        """subtracts vector"""
+        """Subtracts vector"""
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def norm(self):
@@ -29,7 +29,7 @@ class Vector:
         return math.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     def dot(self, other):
-        """Calculates the salar dot product"""
+        """Calculates the scalar dot product"""
         return ((self.x * other.x) + (self.y * other.y) + (self.z * other.z))
 
     def cross(self, other):
@@ -39,14 +39,14 @@ class Vector:
 	((self.x * other.y) - (self.y * other.x)))
 
     def cartesian_to_spherical(self):
-        """Converts cartesian coordinates to spherical polar"""
+        """Converts cartesian coordinates to spherical polar coordinates"""
         r = self.norm()
         theta = math.acos(self.z / r) if r != 0 else 0
         phi = math.atan(self.y / self.x) if self.x != 0 else 0
         return SphericalPolar(r, theta, phi)
 
 class SphericalPolar(Vector):
-    """Spherical polar"""
+    """Inherits Vector class and converts into Spherical polar coordinates"""
     def __init__(self, r, theta, phi):
         """Initialise"""
         self.r = r
@@ -60,7 +60,7 @@ class SphericalPolar(Vector):
         return f"Spherical Polar: ({self.r:.2f}, {self.theta:.2f}, {self.phi:.2f})"
 
     def spherical_to_cartesian(self):
-        """Converts spherical polar to cartesian"""
+        """Converts spherical polar to cartesian coordinates"""
         x = self.r * math.sin(self.theta) * math.cos(self.phi)
         y = self.r * math.sin(self.theta) * math.sin(self.phi)
         z = self.r * math.cos(self.theta)
