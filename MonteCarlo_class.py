@@ -21,6 +21,6 @@ class MC:
 
     def points(self):
         """Generates random points with D being the number of dimensions"""
-        return np.random.uniform(self.D_low, self.D_high, size=(self.N, self.D))
+        return np.random.uniform(low=self.D_low, high=self.D_high, size=(self.N, self.D))
 
 
