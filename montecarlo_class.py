@@ -84,5 +84,35 @@ class MC:
         return volume_est
 
     def volume_exact(self, r=1):
-        """Calculates the exact volume of a unit ball in D dimensions"""
+        """Calculates the exact volume of a unit ball in d dimensions
+
+        Params:
+            r: Raduis of sphere (set to 1.0 as default)
+
+        Returns:
+            float: Exact Volume
+        """
         return (math.pi**(self.d/2) / gamma((self.d/2) + 1)) * r**self.d
+
+    def statistics(self, local_value):
+        """Collects statistics such as mean and variance across MPI processes
+
+        Params:
+            local_values: local values to collect statistics for
+
+        Returns:
+            tuple: (mean, error) if rank is 0, else (None, None)
+        """
+        local_sum = np.sum(local_value)
+        local_sum_squ = np.sum(local_value**2)
+
+        # Reduce across all MPI processws
+        global_sum = self.comm.reduce(local_sum, op=MPI.SUM, root=0)
+        global_sum_squ = self.comm.reduce(local_sum_squ, op=MPI.SUM, root=0)
+
+        if self.rank == 0:
+            mean = global_sum / self.n
+            variance = (global_sum_squ / self.n) - mean**2
+            error = math.sqrt(variance / self.n)
+            return mean, error
+        return None, None
