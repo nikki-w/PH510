@@ -64,7 +64,7 @@ class MC:
         Returns:
             np.darray: Array of shape (n_local, d) with random points
         """
-        return self.rng.uniform(self.d_low, self.d_high, (self.n, self.d))
+        return self.rng.uniform(self.d_low, self.d_high, (self.n_local, self.d))
 
     def volume(self, r):
         """Estimates the volume of a unit ball in d-dimensions with radius, r
@@ -75,10 +75,12 @@ class MC:
         Returns:
             tuple: Volume estimate
         """
-        points = self.points()
-        dist_squared = np.sum(points**2, axis=1)
+        #points = self.points()
+        dist_squared = np.sum(self.points()**2, axis=1)
         points_inside = np.sum(dist_squared <= r**2)
 
+        if self.rank == 0:
+            print(f"Points inside: {points_inside}/{self.n_local}")
         # Calculate the estimated volume
         volume_est = (points_inside/self.n_local) * ((self.d_high - self.d_low)**self.d)
         return volume_est
