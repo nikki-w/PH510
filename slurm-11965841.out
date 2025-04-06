@@ -1,0 +1,143 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"miniconda/3.12.80"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "miniconda/3.12.80"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+===================================================================================
+SLURM Job ID:            11965841
+Submit time:             Mon Apr 07 00:45:55 BST 2025 (Unix Epoch time: 1743983155)
+Start time:              Mon Apr 07 00:46:09 BST 2025 (Unix Epoch time: 1743983169)
+No. nodes:               1
+No. tasks:               1
+Job name:                assignment3
+Account:                 teaching
+QoS:                     teaching
+Partition (queue):       teaching
+Submit directory:        /users/xeb20122/PH510/Assignment 3
+Script name:             /users/xeb20122/PH510/Assignment 3/jobscript_assignment3.sh
+Master node:             wee17
+Nodes used:              wee17
+Task distribution:       
+===================================================================================
+
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+Test Case 1: n-dimension sphere 
+
+2D sphere: 
+
+Exact volume: 3.141593
+MC estimate: 3.141368 +/- 0.0000000314
+Relative error: 0.01%
+
+Parallel Timing:
+Volume: 3.9811 seconds 
+ 
+
+3D sphere: 
+
+Exact volume: 4.188790
+MC estimate: 4.188706 +/- 0.0000000419
+Relative error: 0.00%
+
+Parallel Timing:
+Volume: 5.1129 seconds 
+ 
+
+4D sphere: 
+
+Exact volume: 4.934802
+MC estimate: 4.934766 +/- 0.0000000493
+Relative error: 0.00%
+
+Parallel Timing:
+Volume: 6.2458 seconds 
+ 
+
+5D sphere: 
+
+Exact volume: 5.263789
+MC estimate: 5.263278 +/- 0.0000000526
+Relative error: 0.01%
+
+Parallel Timing:
+Volume: 7.4321 seconds 
+ 
+
+Test Case 2: Gaussian Integration: 
+
+1D Gaussian sigma = 1.0 and x0 = 0 
+
+Exact Gaussian: 1.0
+MC estimate: 0.999972 +/- 0.000055
+Variance: 0.298922
+
+Parallel Timing:
+Integral: 7.8621 seconds 
+ 
+
+1D Gaussian sigma = 2.0 and x0 = 2.0 
+
+Exact Gaussian: 1.0
+MC estimate: 1.000083 +/- 0.000177
+Variance: 3.146710
+
+Parallel Timing:
+Integral: 7.7514 seconds 
+ 
+
+1D Gaussian sigma = 3.0 and x0 = 1.0 
+
+Exact Gaussian: 1.0
+MC estimate: 0.999933 +/- 0.000124
+Variance: 1.537901
+
+Parallel Timing:
+Integral: 7.8336 seconds 
+ 
+
+6D Gaussian sigma = [1.0, 1.0, 2.0, 1.0, 2.0, 2.0] and x0 = [0, 1, 0, 1, 0, 1] 
+
+Exact Gaussian: 1.0
+MC estimate: 0.999905 +/- 0.000737
+Variance: 54.261584
+
+Parallel Timing:
+Integral: 32.9795 seconds 
+ 
+
+6D Gaussian sigma = [3.0, 2.0, 3.0, 1.0, 3.0, 1.0] and x0 = [-1, 0, 1, -1, -1, 1] 
+
+Exact Gaussian: 1.0
+MC estimate: 0.999460 +/- 0.001358
+Variance: 184.534749
+
+Parallel Timing:
+Integral: 34.1588 seconds 
+ 
+
+6D Gaussian sigma = [2.0, 3.0, 3.0, 3.0, 1.0, 2.0] and x0 = [1, -1, 0, 1, 0, 0] 
+
+Exact Gaussian: 1.0
+MC estimate: 0.999841 +/- 0.000807
+Variance: 65.138235
+
+Parallel Timing:
+Integral: 33.7738 seconds 
+ 
+
+===================================================================================
+SLURM job 11965841 ended:     Mon Apr 07 00:49:02 BST 2025 (Unix Epoch time: 1743983342)
+This is an estimated end time using the 'date' command from node wee17.hpc.strath.ac.uk
+For accurate timings, use 'sacct -j 11965841 -X --format=Submit,Start,End,Elapsed'
+======================================================================================
+/tmp/slurmd/job11965841/slurm_script: line 57: ------------------------------------------------------: command not found
