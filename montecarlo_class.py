@@ -52,7 +52,7 @@ class MC:
 
         #Initialise rng using seed
         if seed is not None:
-            self.seed = (seed + self.rank) 
+            self.seed = seed + self.rank
         else:
             self.seed = None
 
@@ -94,15 +94,29 @@ class MC:
         return (math.pi**(self.d/2) / gamma((self.d/2) + 1)) * r**self.d
 
     def gauss_integ(self, sigma, x0):
-        """ doc for integral"""
+        """Calculate the integral of multidimensional gaussian through transformation
+
+        Params:
+            sigma: Array of distribution widths for each dimension (length = len(d))
+            x0: Array of locations for each dimension (length = len(d))
+
+        Returns:
+            tuple: mean, error and variance on rank 0 (None for all if else)
+            mean: Estimate of the integral
+            error: Standard error of the estimate
+            variance: Variance after transformation of the integral
+            (mean, error and variance all come from using the statistics function
+        """
+
         sigma = np.asarray(sigma)
         x0 = np.asarray(x0)
 
         # Have error raised if sigma and x0 are not equal to the number of dimensions
         if len(sigma) != self.d or len(x0) != self.d:
-            raise ValueError("Dimensions of both sigma and x0 need to equal the number of dimensions, d")
+            raise ValueError("Dimensions of sigma and x0 need to equal the number of dimensions")
 
-        t = self.points()
+        # Clip the points so we can avoid values of 0
+        t = np.clip(self.points(), -0.99999999, 0.99999999)
         x = t / (1-t**2)
         a = np.prod((1+t**2) / (1-t**2)**2, axis=1)
         exponent = -0.5 * np.sum((x-x0)**2 / sigma**2, axis=1)
@@ -120,22 +134,23 @@ class MC:
         Returns:
             tuple: (mean, error) if rank is 0, else (None, None)
         """
-        if is_integral:
-            local_sum = np.sum(local_value)
-            local_sum_squ = np.sum(local_value**2)
-            normalisation = (self.d_high - self.d_low)**self.d
-        else:
-            local_sum = np.sum(local_value)
-            local_sum_squ = np.sum(local_value**2)
-            normalisation = 1.0
+        local_sum = np.sum(local_value)
+        local_sum_squ = np.sum(local_value**2)
 
-        # Reduce across all MPI processws
+        # Reduce across all MPI processes
         global_sum = self.comm.reduce(local_sum, op=MPI.SUM, root=0)
         global_sum_squ = self.comm.reduce(local_sum_squ, op=MPI.SUM, root=0)
 
+        # Calculate error for volume scaling in the integral
         if self.rank == 0:
-            mean = (global_sum / self.n) * normalisation
-            variance = (global_sum_squ / self.n) * normalisation**2 - mean**2
+            if is_integral:
+                normalisation = (self.d_high - self.d_low)**self.d
+                mean = (global_sum / self.n) * normalisation
+                variance = ((global_sum_squ / self.n) - (global_sum / self.n)**2) * normalisation**2
+            else:
+                mean = global_sum / self.n
+                variance = (global_sum_squ / self.n) - (global_sum / self.n)**2
+
             error = math.sqrt(variance / self.n)
             return mean, error, variance
         return None, None, None
