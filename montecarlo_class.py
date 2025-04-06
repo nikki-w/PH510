@@ -8,6 +8,7 @@ create simulations with parallel RNG, collect statistics, estimate volumes
 of n-dimensional spheres and integrate gaussian functions in n-dimensions"""
 
 import math
+import time
 import numpy as np
 from mpi4py import MPI
 from scipy.special import gamma
@@ -35,6 +36,9 @@ class MC:
         d_high: Upper limit for each dimension (set to 1.0 as default)
         seed: Optional global seed for RNG (set to None as default)
         """
+        # Create dictionary to store times
+        self.timing = {}
+
         comm = MPI.COMM_WORLD
         self.comm = comm
         self.rank = comm.Get_rank()
@@ -75,11 +79,17 @@ class MC:
         Returns:
             tuple: Volume estimate
         """
+        start_time = time.time()
+
         dist_squared = np.sum(self.points()**2, axis=1)
         points_inside = np.sum(dist_squared <= r**2)
 
         # Calculate the estimated volume
         volume_est = (points_inside/self.n_local) * ((self.d_high - self.d_low)**self.d)
+
+        if self.rank == 0:
+            self.timing['Volume'] = time.time() - start_time
+
         return volume_est
 
     def volume_exact(self, r=1):
@@ -93,7 +103,7 @@ class MC:
         """
         return (math.pi**(self.d/2) / gamma((self.d/2) + 1)) * r**self.d
 
-    def gauss_integ(self, sigma, x0):
+    def gauss_integ(self, sigma, x0):# importance_sampling=True):
         """Calculate the integral of multidimensional gaussian through transformation
 
         Params:
@@ -107,7 +117,7 @@ class MC:
             variance: Variance after transformation of the integral
             (mean, error and variance all come from using the statistics function
         """
-
+        start_time = time.time()
         sigma = np.asarray(sigma)
         x0 = np.asarray(x0)
 
@@ -115,15 +125,25 @@ class MC:
         if len(sigma) != self.d or len(x0) != self.d:
             raise ValueError("Dimensions of sigma and x0 need to equal the number of dimensions")
 
+        # Attempt at importance sampling
+        #if importance_sampling:
+         #   point  = self.rng.normal(x0, sigma, size=(self.n_local, self.d))
+
         # Clip the points so we can avoid values of 0
         t = np.clip(self.points(), -0.99999999, 0.99999999)
         x = t / (1-t**2)
         a = np.prod((1+t**2) / (1-t**2)**2, axis=1)
+
         exponent = -0.5 * np.sum((x-x0)**2 / sigma**2, axis=1)
         gauss = np.exp(exponent) / ((2*np.pi)**(self.d/2) * np.prod(sigma))
-
         integ = gauss * a
-        return self.statistics(integ, is_integral=True)
+
+        val = self.statistics(integ, is_integral=True)
+
+        if self.rank == 0:
+            self.timing['Integral'] = time.time() - start_time
+
+        return val
 
     def statistics(self, local_value, is_integral=False):
         """Collects statistics such as mean and variance across MPI processes
@@ -154,3 +174,10 @@ class MC:
             error = math.sqrt(variance / self.n)
             return mean, error, variance
         return None, None, None
+
+    def timings(self):
+        """Print timings for parallel code"""
+        if self.rank == 0 and hasattr(self, 'timing'):
+            print("\nParallel Timing:")
+            for key, value in self.timing.items():
+                print(f"{key}: {value:.4f} seconds \n", "\n")
