@@ -75,12 +75,9 @@ class MC:
         Returns:
             tuple: Volume estimate
         """
-        #points = self.points()
         dist_squared = np.sum(self.points()**2, axis=1)
         points_inside = np.sum(dist_squared <= r**2)
 
-        if self.rank == 0:
-            print(f"Points inside: {points_inside}/{self.n_local}")
         # Calculate the estimated volume
         volume_est = (points_inside/self.n_local) * ((self.d_high - self.d_low)**self.d)
         return volume_est
@@ -95,6 +92,22 @@ class MC:
             float: Exact Volume
         """
         return (math.pi**(self.d/2) / gamma((self.d/2) + 1)) * r**self.d
+
+    def gauss_integ(self, sigma, x0):
+        """ doc for integral"""
+        sigma = np.asarray(sigma)
+        x0 = np.asarray(x0)
+
+        # Have error raised if sigma and x0 are not equal to the number of dimensions
+        if len(sigma) != self.d or len(x0) != self.d:
+            raise ValueError("Dimensions of both sigma and x0 need to equal the number of dimensions, d")
+
+        t = self.points()
+        x = t / (1-t**2)
+        a = np.prod((1+t**2) / (1-t**2)**2, axis=1)
+        gauss = np.exp(-0.5 * np.sum((x - x0)**2 / sigma**2, axis=1)) / ((2*np.pi)**(self.d/2) * np.prod(sigma))
+        integ = np.mean(gauss * a) * (self.d_high - self.d_low)**self.d
+        return self.statistics(integ)
 
     def statistics(self, local_value):
         """Collects statistics such as mean and variance across MPI processes
@@ -116,5 +129,5 @@ class MC:
             mean = global_sum / self.n
             variance = (global_sum_squ / self.n) - mean**2
             error = math.sqrt(variance / self.n)
-            return mean, error
-        return None, None
+            return mean, error, variance
+        return None, None, None
