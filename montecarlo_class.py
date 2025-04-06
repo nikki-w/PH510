@@ -105,11 +105,13 @@ class MC:
         t = self.points()
         x = t / (1-t**2)
         a = np.prod((1+t**2) / (1-t**2)**2, axis=1)
-        gauss = np.exp(-0.5 * np.sum((x - x0)**2 / sigma**2, axis=1)) / ((2*np.pi)**(self.d/2) * np.prod(sigma))
-        integ = np.mean(gauss * a) * (self.d_high - self.d_low)**self.d
-        return self.statistics(integ)
+        exponent = -0.5 * np.sum((x-x0)**2 / sigma**2, axis=1)
+        gauss = np.exp(exponent) / ((2*np.pi)**(self.d/2) * np.prod(sigma))
 
-    def statistics(self, local_value):
+        integ = gauss * a
+        return self.statistics(integ, is_integral=True)
+
+    def statistics(self, local_value, is_integral=False):
         """Collects statistics such as mean and variance across MPI processes
 
         Params:
@@ -118,16 +120,22 @@ class MC:
         Returns:
             tuple: (mean, error) if rank is 0, else (None, None)
         """
-        local_sum = np.sum(local_value)
-        local_sum_squ = np.sum(local_value**2)
+        if is_integral:
+            local_sum = np.sum(local_value)
+            local_sum_squ = np.sum(local_value**2)
+            normalisation = (self.d_high - self.d_low)**self.d
+        else:
+            local_sum = np.sum(local_value)
+            local_sum_squ = np.sum(local_value**2)
+            normalisation = 1.0
 
         # Reduce across all MPI processws
         global_sum = self.comm.reduce(local_sum, op=MPI.SUM, root=0)
         global_sum_squ = self.comm.reduce(local_sum_squ, op=MPI.SUM, root=0)
 
         if self.rank == 0:
-            mean = global_sum / self.n
-            variance = (global_sum_squ / self.n) - mean**2
+            mean = (global_sum / self.n) * normalisation
+            variance = (global_sum_squ / self.n) * normalisation**2 - mean**2
             error = math.sqrt(variance / self.n)
             return mean, error, variance
         return None, None, None
