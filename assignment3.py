@@ -79,9 +79,56 @@ if MC_rand_5D.rank == 0:
 
 
 # Test Case 2: Evaluation of gaussian function
-MC_rand_6D = MC.MC(d=1, n=100000000, seed=134)
 
-MC_6D_gauss = MC_rand_6D.gauss_integ(sigma=[1.0], x0=[0])
+# Initialise MC for 1D
+MC_rand_1D = MC.MC(d=1, n=100000000, seed=134)
+
+#Calculate MC estimate for 1D gaussian for range of values
+MC_1D_gauss_val1 = MC_rand_1D.gauss_integ(sigma=[1.0], x0=[0])
+MC_1D_gauss_val2 = MC_rand_1D.gauss_integ(sigma=[2.0], x0=[2.0])
+MC_1D_gauss_val3 = MC_rand_1D.gauss_integ(sigma=[3.0], x0=[1.0])
+
+if MC_rand_1D.rank == 0:
+    print("Test Case 2: Gaussian Integration: \n")
+    print("1D Gaussian sigma = 1.0 and x0 = 0", "\n")
+    print("Exact Gaussian: 1.0")
+    print(f"MC estimate: {MC_1D_gauss_val1[0]:.6f} +/- {MC_1D_gauss_val1[1]:.6f}")
+    print(f"Variance: {MC_1D_gauss_val1[2]:.6f}\n", "\n")
+
+    print("1D Gaussian sigma = 2.0 and x0 = 2.0", "\n")
+    print("Exact Gaussian: 1.0")
+    print(f"MC estimate: {MC_1D_gauss_val2[0]:.6f} +/- {MC_1D_gauss_val2[1]:.6f}")
+    print(f"Variance: {MC_1D_gauss_val2[2]:.6f}\n", "\n")
+
+    print("1D Gaussian sigma = 3.0 and x0 = 1.0", "\n")
+    print("Exact Gaussian: 1.0")
+    print(f"MC estimate: {MC_1D_gauss_val3[0]:.6f} +/- {MC_1D_gauss_val3[1]:.6f}")
+    print(f"Variance: {MC_1D_gauss_val3[2]:.6f}\n", "\n")
+
+
+# Initialise MC for 6D
+MC_rand_6D = MC.MC(d=6, n=100000000, seed=134)
+
+#Calculate MC estimate for 6D gaussian
+MC_6D_gauss_val1 = MC_rand_6D.gauss_integ(sigma=[1.0, 1.0, 2.0, 1.0, 2.0, 2.0],
+x0=[0, 1, 0, 1, 0, 1])
+MC_6D_gauss_val2 = MC_rand_6D.gauss_integ(sigma=[3.0, 2.0, 3.0, 1.0, 3.0, 1.0],
+x0=[-1, 0, 1, -1, -1, 1])
+MC_6D_gauss_val3 = MC_rand_6D.gauss_integ(sigma=[2.0, 3.0, 3.0, 3.0, 1.0, 2.0],
+x0=[1, -1, 0, 1, 0, 0])
 
 if MC_rand_6D.rank == 0:
-    print(MC_6D_gauss)
+    print("6D Gaussian sigma = [1.0, 1.0, 2.0, 1.0, 2.0, 2.0] and x0 = [0, 1, 0, 1, 0, 1]", "\n")
+    print("Exact Gaussian: 1.0")
+    print(f"MC estimate: {MC_6D_gauss_val1[0]:.6f} +/- {MC_6D_gauss_val1[1]:.6f}")
+    print(f"Variance: {MC_6D_gauss_val1[2]:.6f}\n", "\n")
+
+    print("6D Gaussian sigma = [3.0, 2.0, 3.0, 1.0, 3.0, 1.0] and x0 = [-1, 0, 1, -1, -1, 1]", "\n")
+    print("Exact Gaussian: 1.0")
+    print(f"MC estimate: {MC_6D_gauss_val2[0]:.6f} +/- {MC_6D_gauss_val2[1]:.6f}")
+    print(f"Variance: {MC_6D_gauss_val2[2]:.6f}\n", "\n")
+
+    print("6D Gaussian sigma = [2.0, 3.0, 3.0, 3.0, 1.0, 2.0] and x0 = [1, -1, 0, 1, 0, 0]", "\n")
+    print("Exact Gaussian: 1.0")
+    print(f"MC estimate: {MC_6D_gauss_val3[0]:.6f} +/- {MC_6D_gauss_val3[1]:.6f}")
+    print(f"Variance: {MC_6D_gauss_val3[2]:.6f}\n", "\n")
