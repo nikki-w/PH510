@@ -9,6 +9,7 @@ import numpy as np
 from mpi4py import MPI
 import montecarlo_class as MC
 
+# Task 1:
 # Create new class to solve Poisson's equation
 class PoissonEqtn:
     """ Create a class to solve Poissons equation for NxN grid via
@@ -71,7 +72,7 @@ class PoissonEqtn:
             for j in range(self.n):
                 self.f[i, j] = charge_dist(i, j)
 
-    def overelaxation(self):
+    def overrelaxation(self):
         """
         Method for relaxation/overrelaxation
         """
@@ -85,4 +86,41 @@ class PoissonEqtn:
                 phi_new = ((1 - self.omega) * self.phi[i, j] + (self.omega/4) * charge)
         self.phi = phi_new
 
+    def convergence_check(self, max_iter=10000, tolerance=1e-6):
+        for iteration in range(max_iter):
+            init_phi = self.phi.copy()
+            self.overrelaxation()
+            delta = np.max(np.abs(self.phi - init.phi))
+            # For convergance
+            if delta < tolerance:
+                return iteration #stop loop when delta falls below tolerance
+        # For non-convergance
+        return max_iter
+
+# Task 2:
+# Create new class to solve Green's eqtn
+class GreensEqtn:
+    """Create class to solve Green's function via use of random walkers"""
+    def __init__(self, n, h, boundary_cond, charge_dist):
+        """
+        Initialise Green's solver
+
+        n: grid size
+        h: grid spacing
+        boundary_cond: function that returns potential and boundary points
+        charge_dist: function returning charge dist at grid points
+        """
+        self.n = n
+        self.h = h
+        self.boundary_cond = boundary_cond
+        self.charge_dist = charge_dist
+        self.comm = MPI.COMM_WORLD
+        self.rank = self.comm.Get_rank()
+        self.size = self.comm.Get_size()
+
+    def random_walkers(Self, start_i, start_j, n_walks):
+        """
+        Function that produces random walks from start points (i and j) to estimate Green's
+        function
+        """
 
