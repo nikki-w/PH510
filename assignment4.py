@@ -36,7 +36,7 @@ class PoissonEqtn:
         else:
             self.omega = omega
 
-        # Create arrays to store potential, phi, and charge, fm for later tasks
+        # Create arrays to store potential, phi, and charge, f, for later tasks
         self.phi = np.zeros((n, n))
         self.f = np.zeros((n, n))
 
@@ -44,3 +44,45 @@ class PoissonEqtn:
         self.localrow = n // self.size
         self.extrarows = n % self.size
         self.startrow = self. startrow + self.localrow + (1 if self.rank < self.extrarows else 0)
+
+    def bc_potential(self, boundary_cond):
+        """
+        Define boundary conditions to place the potential
+
+        boundary_cond: funct that takes grid points and returns the potential
+        """
+        # Define boundary values
+        # Left and right boundary:
+        for j in [0, (self.n - 1)]:
+            for i in range(self.n):
+                self.phi[i, j] = boundary_cond(i, j)
+        # Top and bottom boundary:
+        for i in [0, (self.n - 1)]:
+            for j in range(self.n):
+                self.phi[i, j] = boundary_cond(i, j)
+
+    def charge_dist(self, charge_dist):
+        """
+        Define the distribution of charge across the grid
+
+        charge_dist: Funct that takes grid points and returnes the charge
+        """
+        for i in range(self.n):
+            for j in range(self.n):
+                self.f[i, j] = charge_dist(i, j)
+
+    def overelaxation(self):
+        """
+        Method for relaxation/overrelaxation
+        """
+        phi_new = self.phi.copy() # copy phi values into new variable
+        # Method will update the potential via overrelaxation for points inside grid
+        for i in range(1, (self.n - 1)):
+            for j in range(1, (self.n - 1)):
+                # Define new phi from equation given in hand-out
+                terms = (self.phi[i+1, j] + self.phi[i-1, j] + self.phi[i, j+1] + self.phi[i, j-1])
+                charge = terms + self.h**2 * self.f[i, j]
+                phi_new = ((1 - self.omega) * self.phi[i, j] + (self.omega/4) * charge)
+        self.phi = phi_new
+
+
