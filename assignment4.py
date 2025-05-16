@@ -66,7 +66,7 @@ class PoissonEqtn:
         """
         Define the distribution of charge across the grid
 
-        charge_dist: Funct that takes grid points and returnes the charge
+        charge_dist: Funct that takes grid points and returns the charge
         """
         for i in range(self.n):
             for j in range(self.n):
@@ -87,10 +87,11 @@ class PoissonEqtn:
         self.phi = phi_new
 
     def convergence_check(self, max_iter=10000, tolerance=1e-6):
+        """Check for convergence"""
         for iteration in range(max_iter):
             init_phi = self.phi.copy()
             self.overrelaxation()
-            delta = np.max(np.abs(self.phi - init.phi))
+            delta = np.max(np.abs(self.phi - init_phi))
             # For convergance
             if delta < tolerance:
                 return iteration #stop loop when delta falls below tolerance
@@ -118,9 +119,71 @@ class GreensEqtn:
         self.rank = self.comm.Get_rank()
         self.size = self.comm.Get_size()
 
-    def random_walkers(Self, start_i, start_j, n_walks):
+    def random_walkers(self, start_i, start_j, n_walks):
         """
         Function that produces random walks from start points (i and j) to estimate Green's
         function
-        """
 
+        grid_points_count: Counts how many walks pass through each grid point
+        bound_end: Counts how many random walks will end at each boundary point
+        """
+        grid_points_count = np.zeros((self.n, self.n))
+        bound_end = np.zeros((self.n, self.n))
+
+        # Create random walks
+        k = 0
+        for k in range(n_walks):
+            i, j = start_i, start_j
+            while True:
+                if i== 0 or i == (self.n-1)or j == 0 or j == (self.n-1):
+                    bound_end[i, j] += 1
+                    k += 1
+                    break #stops random walk when it reaches the grid boundary
+
+                # Randomly move to up, down, left or right
+                position = np.random.randint(0, 4)
+                if position == 0:
+                    i += 1
+                elif position == 1:
+                    i -= 1
+                elif position == 2:
+                    j += 1
+                else:
+                    j -= 1
+
+                # Sum visits through grid points
+                if 0 < i < (self.n-1) and 0 < j < (self.n-1):
+                    grid_points_count[i, j] += 1
+
+        g_lap = bound_end / n_walks
+        # From hints
+        g_charge = (self.h**2 * grid_points_count) / n_walks
+
+        return g_lap, g_charge
+
+    def potential(self, start_i, start_j, n_walks=10000):
+        """
+        Calculates the potential using greens function
+        """
+        g_lap, g_charge = self.random_walkers(start_i, start_j, n_walks)
+
+        # Laplace part of equation
+        boundary_sum = 0
+        for i in [0, (self.n-1)]:
+            for j in range(self.n):
+                boundary_sum += g_lap[i, j] * self.boundary_cond(i, j)
+
+        for j in [0, (self.n-1)]:
+            for i in range(1, (self.n-1)):
+                boundary_sum += g_lap[i, j] * self.boundary_cond(i, j)
+
+        # Poisson part of equation
+        charge_sum = 0
+        for i in range(1, (self.n-1)):
+            for j in range(1, (self.n-1)):
+                charge_sum += g_charge[i, j] * self.charge_dist(i, j)
+
+        # Calculate total potential (sum laplace and poisson)
+        phi = boundary_sum + charge_sum
+
+        return phi
