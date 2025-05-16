@@ -88,9 +88,9 @@ class PoissonEqtn:
         for i in range(1, self.n-1):
             for j in range(1, self.n-1):
                 # Calculate avg
-                phi_sum = (self.phi[i+1, j] + self.phi[i-1, j] + self.phi[i, j+1] + self.phi[i, j-1])*0.25
-                charge_term = min(self.h**2 * self.f[i, j], 1e10)*0.25
-                update = (phi_sum + charge_term)
+                phi_sum = self.phi[i+1, j] + self.phi[i-1, j] + self.phi[i, j+1] + self.phi[i, j-1]
+                charge_term = min(self.h**2 * self.f[i, j], 1e10)
+                update = (phi_sum + charge_term)*0.25
                 delta = update - self.phi[i, j]
                 phi_new[i, j] = self.phi[i, j] + min(self.omega * delta, 1e4)
 
@@ -149,10 +149,12 @@ class GreensEqtn:
         k = 0
         for k in range(n_walks):
             i, j = start_i, start_j
-            while True:
-                if i== 0 or i == (self.n-1)or j == 0 or j == (self.n-1):
+            steps = 0
+            max_steps = 100 *self.n
+
+            while steps < max_steps:
+                if i== 0 or i == (self.n-1) or j == 0 or j == (self.n-1):
                     bound_end[i, j] += 1
-                    k += 1
                     break #stops random walk when it reaches the grid boundary
 
                 # Randomly move to up, down, left or right
@@ -169,18 +171,59 @@ class GreensEqtn:
                 # Sum visits through grid points
                 if 0 < i < (self.n-1) and 0 < j < (self.n-1):
                     grid_points_count[i, j] += 1
+                steps += 1
 
+        # Calculate greens funct
         g_lap = bound_end / n_walks
+        g_lap_err = np.sqrt(g_lap * (1-g_lap) / n_walks)
+
         # From hints
         g_charge = (self.h**2 * grid_points_count) / n_walks
+        g_charge_err = np.sqrt(g_charge * (1 - g_charge) / n_walks)
 
-        return g_lap, g_charge
+        return g_lap, g_charge, g_lap_err, g_charge_err
 
     def potential(self, start_i, start_j, n_walks=10000):
         """
         Calculates the potential using greens function
         """
         g_lap, g_charge, g_lap_err, g_charge_err = self.random_walkers(start_i, start_j, n_walks)
+
+        # Laplace part of equation
+        boundary_sum = 0
+        boundary_err = 0
+        for i in [0, (self.n-1)]:
+            for j in range(self.n):
+                boundary_sum += g_lap[i, j] * self.boundary_cond(i, j)
+                boundary_err += (g_lap_err[i, j] * self.boundary_cond(i, j))**2
+
+        for j in [0, (self.n-1)]:
+            for i in range(1, (self.n-1)):
+                boundary_sum += g_lap[i, j] * self.boundary_cond(i, j)
+                boundary_err += (g_lap_err[i, j] * self.boundary_cond(i, j))**2
+
+        # Poisson part of equation
+        charge_sum = 0
+        charge_err = 0
+        for i in range(1, (self.n-1)):
+            for j in range(1, (self.n-1)):
+                charge_sum += g_charge[i, j] * self.charge_dist(i, j)
+                charge_err += (g_charge_err[i, j] * self.boundary_cond(i, j))**2
+
+        # Calculate total potential (sum laplace and poisson)
+        phi = boundary_sum + charge_sum
+        err = np.sqrt(boundary_err + charge_err)
+
+        return phi, err
+
+    def potential_calc(self, g_lap, g_charge, g_lap_err=None, g_charge_err=None):
+        """
+        Calculates the potential using greens function (task 4)
+        """
+        if g_lap_err is None:
+            g_lap_err = np.zeros_like(g_lap)
+        if g_charge_err is None:
+            g_charge_err = np.zeros_like(g_charge)
 
         # Laplace part of equation
         boundary_sum = 0
@@ -221,14 +264,21 @@ class GreensEqtn:
         # Reduce results across all processes
         global_g_lap = np.zeros((self.n, self.n))
         global_g_charge = np.zeros((self.n, self.n))
+        global_g_lap_err = np.zeros((self.n, self.n))
+        global_g_charge_err = np.zeros((self.n, self.n))
         self.comm.Reduce(g_lap, global_g_lap, op=MPI.SUM, root=0)
         self.comm.Reduce(g_charge, global_g_charge, op=MPI.SUM, root=0)
+        self.comm.Reduce(g_lap_err**2, global_g_lap_err, op=MPI.SUM, root=0)
+        self.comm.Reduce(g_charge_err**2, global_g_charge_err, op=MPI.SUM, root=0)
 
         # Normalise and generate results
         if mc.rank == 0:
             global_g_lap /= tot_walks
             global_g_charge /= tot_walks
-            phi, err = self.potential(global_g_lap, global_g_charge, None, None)
+            global_g_lap_err = np.sqrt(global_g_lap_err)
+            global_g_charge_err = np.sqrt(global_g_charge_err)
+
+            phi, err = self.potential_calc(global_g_lap, global_g_charge, global_g_lap_err, global_g_charge_err)
             return phi, err
         return None, None
 
@@ -256,31 +306,29 @@ if greens.rank == 0:
 
 # Step through each point to determine answer
 for k, (i, j) in enumerate(points):
-    g_lap, g_charge = greens.random_walkers(i, j, 10000)
+    g_lap, g_charge, g_lap_err, g_charge_err = greens.random_walkers(i, j, 10000)
 
     if greens.rank == 0:
-        g_lap_err = np.sqrt(g_lap * (1 - g_lap) / 10000)
-        g_charge_err = np.sqrt(g_charge * (1 - g_charge) / 10000)
-
         # Results
         print(f"\nPoint {k+1} ({(i*h*100):.1f}cm, {(j*h*100):.1f}cm):")
         print(f"Max Laplace G: {np.max(g_lap):.4f} +/- {np.max(g_lap_err):.4f}")
         print(f"Max Charge G: {np.max(g_charge):.4f} +/- {np.max(g_charge_err):.4f}")
 
-        # Plot of results
-        plt.figure()
-        plt.imshow(g_lap, extent=[0, 10, 0, 10], origin='lower')
-        plt.colorbar(label="Laplace Green's function")
-        plt.title(f"Laplace Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
-        plt.savefig(f"Task3_laplace_plot{k+1}.png")
-        plt.close()
+if greens.rank == 0:
+    # Plot of results
+    plt.figure()
+    plt.imshow(g_lap, extent=[0, 10, 0, 10], origin='lower')
+    plt.colorbar(label="Laplace Green's function")
+    plt.title(f"Laplace Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
+    plt.savefig(f"Task3_laplace_plot{k+1}.png")
+    plt.close()
 
-        plt.figure()
-        plt.imshow(g_charge, extent=[0, 10, 0, 10], origin='lower')
-        plt.colorbar(label="Charge Green's function")
-        plt.title(f"Charge Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
-        plt.savefig(f"Task3_charge_plot{k+1}.png")
-        plt.close()
+    plt.figure()
+    plt.imshow(g_charge, extent=[0, 10, 0, 10], origin='lower')
+    plt.colorbar(label="Charge Green's function")
+    plt.title(f"Charge Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
+    plt.savefig(f"Task3_charge_plot{k+1}.png")
+    plt.close()
 
 # Task 4:
 # Parameters are the same as in Task 3 so no need to redefine
@@ -315,11 +363,11 @@ def charge_task4_c(i, j):
     r = np.sqrt((i-n//2)**2 + ((j-n//2)**2)*h)
     return np.exp(-2000*r)
 
-point_names = ["Centre", "Quarter", "Edge", "Corner"] 
+point_names = ["Centre", "Quarter", "Edge", "Corner"]
 
 # No need to create new points as we use the ones from task 3
 # Initialise poissons eqtn
-poisson = PoissonEqtn(n, h)
+poisson = PoissonEqtn(n, h, omega=1.7)
 # Greens is already initialised above but need to redo so we can set the bc
 greens = GreensEqtn(n, h, None, None)
 
@@ -374,3 +422,27 @@ for (i, j), name in zip(points, point_names):
         print(f"{name} ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm): "
                   f"MC = {phi_mc:.4f} +/- {err_mc:.4f} V, "
                   f"Relaxation = {poisson.phi[i,j]:.4f} V")
+
+# Task 5
+if greens.rank == 0:
+    print("\nTask 5: Validation")
+
+    poisson_values = PoissonEqtn(n, h, omega=1.7)
+    greens_values = GreensEqtn(n, h, None, None)
+
+    #4a
+    print("\n Task 4 a) validation:")
+    poisson_values.bc_potential(bc_task4_a)
+    poisson_values.charge_dist(charge_task4_a)
+    poisson_values.convergence_check(max_iter=5000)
+
+    greens_values.boundary_cond = bc_task4_a
+    greens_values.charge_dist = charge_task4_a
+
+    diff = []
+    for (i, j), name in zip(points, point_names):
+        phi_mc, err_mc = greens_values.parallel_potential(i, j, 100000)
+        phi_relaxation = poisson_values.phi[i,j]
+        diffs = abs(phi.mc - phi_relaxation)
+        diff.append(diffs)
+        print(f"{name}: (MC - Relax) = {diff:.2e} V")
