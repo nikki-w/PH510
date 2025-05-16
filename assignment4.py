@@ -44,8 +44,13 @@ class PoissonEqtn:
 
         # Split up tasks for parallel implementation
         self.localrow = n // self.size
-        self.extrarows = n % self.size
-        self.startrow = self. startrow + self.localrow + (1 if self.rank < self.extrarows else 0)
+        self.extrarow = n % self.size
+        self.startrow = self.rank * self.localrow
+        if self.rank < self.extrarow:
+            self.startrow += self.rank
+            self.localrow += 1
+        else:
+            self.startrow += self.extrarow
 
     def bc_potential(self, boundary_cond):
         """
@@ -77,14 +82,22 @@ class PoissonEqtn:
         """
         Method for relaxation/overrelaxation
         """
-        phi_new = self.phi.copy() # copy phi values into new variable
+        phi_new = np.copy(self.phi) # copy phi values into new variable
+
         # Method will update the potential via overrelaxation for points inside grid
-        for i in range(1, (self.n - 1)):
-            for j in range(1, (self.n - 1)):
-                # Define new phi from equation given in hand-out
-                terms = (self.phi[i+1, j] + self.phi[i-1, j] + self.phi[i, j+1] + self.phi[i, j-1])
-                charge = terms + self.h**2 * self.f[i, j]
-                phi_new = ((1 - self.omega) * self.phi[i, j] + (self.omega/4) * charge)
+        for i in range(1, self.n-1):
+            for j in range(1, self.n-1):
+                # Calculate avg
+                phi_sum = (self.phi[i+1, j] + self.phi[i-1, j] + self.phi[i, j+1] + self.phi[i, j-1])*0.25
+                charge_term = min(self.h**2 * self.f[i, j], 1e10)*0.25
+                update = (phi_sum + charge_term)
+                delta = update - self.phi[i, j]
+                phi_new[i, j] = self.phi[i, j] + min(self.omega * delta, 1e4)
+
+                # Force finite values
+                if not np.isfinite(phi_new[i,j]):
+                    phi_new[i,j] = phi_sum
+
         self.phi = phi_new
 
     def convergence_check(self, max_iter=10000, tolerance=1e-6):
@@ -92,9 +105,10 @@ class PoissonEqtn:
         for iteration in range(max_iter):
             init_phi = self.phi.copy()
             self.overrelaxation()
-            delta = np.max(np.abs(self.phi - init_phi))
+
+            delta = np.nanmax(np.abs(self.phi - init_phi))
             # For convergance
-            if delta < tolerance:
+            if np.isnan(delta) or delta < tolerance:
                 return iteration #stop loop when delta falls below tolerance
         # For non-convergance
         return max_iter
@@ -249,7 +263,7 @@ for k, (i, j) in enumerate(points):
         g_charge_err = np.sqrt(g_charge * (1 - g_charge) / 10000)
 
         # Results
-        print(f"\nPoint {+1}k ({(i*h*100):.1f}cm, {(j*h*100):.1f}cm):")
+        print(f"\nPoint {k+1} ({(i*h*100):.1f}cm, {(j*h*100):.1f}cm):")
         print(f"Max Laplace G: {np.max(g_lap):.4f} +/- {np.max(g_lap_err):.4f}")
         print(f"Max Charge G: {np.max(g_charge):.4f} +/- {np.max(g_charge_err):.4f}")
 
@@ -267,3 +281,96 @@ for k, (i, j) in enumerate(points):
         plt.title(f"Charge Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
         plt.savefig(f"Task3_charge_plot{k+1}.png")
         plt.close()
+
+# Task 4:
+# Parameters are the same as in Task 3 so no need to redefine
+# Define new boundary conditions as per task requirements
+def bc_task4_a(i, j):
+    return 1.0
+
+def bc_task4_b(i, j):
+    if j == 0 or j == (n-1):
+        return 1.0
+    else:
+        return -1.0
+
+def bc_task4_c(i, j):
+    if i == 0:
+        return 2.0
+    elif i == (n-1):
+        return -4.0
+    elif j == (n-1):
+        return 2.0
+    else:
+        return 0
+
+# Define charge distributions
+def charge_task4_a(i, j):
+    return 10/(n*n)
+
+def charge_task4_b(i, j):
+    return (n-1-j)/ (n-1)
+
+def charge_task4_c(i, j):
+    r = np.sqrt((i-n//2)**2 + ((j-n//2)**2)*h)
+    return np.exp(-2000*r)
+
+point_names = ["Centre", "Quarter", "Edge", "Corner"] 
+
+# No need to create new points as we use the ones from task 3
+# Initialise poissons eqtn
+poisson = PoissonEqtn(n, h)
+# Greens is already initialised above but need to redo so we can set the bc
+greens = GreensEqtn(n, h, None, None)
+
+if greens.rank == 0:
+    print("\nTask 4: Potential Calculations")
+
+# a)
+if greens.rank == 0:
+    print("\na): All edges +1V, uniform 10C charge")
+greens.boundary_cond = bc_task4_a
+greens.charge_dist = charge_task4_a
+poisson.bc_potential(bc_task4_a)
+poisson.charge_dist(charge_task4_a)
+poisson.convergence_check()
+
+for (i, j), name in zip(points, point_names):
+    phi_mc, err_mc = greens.parallel_potential(i, j, 100000)
+    if greens.rank == 0:
+        print(f"{name} ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm): "
+                  f"MC = {phi_mc:.4f} +/- {err_mc:.4f} V, "
+                  f"Relaxation = {poisson.phi[i,j]:.4f} V")
+
+
+# b)
+if greens.rank == 0:
+    print("\nb): Top/bottom +1V, sides -1V, vertical gradiant")
+greens.boundary_cond = bc_task4_b
+greens.charge_dist = charge_task4_b
+poisson.bc_potential(bc_task4_b)
+poisson.charge_dist(charge_task4_b)
+poisson.convergence_check()
+
+for (i, j), name in zip(points, point_names):
+    phi_mc, err_mc = greens.parallel_potential(i, j, 100000)
+    if greens.rank == 0:
+        print(f"{name} ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm): "
+                  f"MC = {phi_mc:.4f} +/- {err_mc:.4f} V, "
+                  f"Relaxation = {poisson.phi[i,j]:.4f} V")
+
+# c)
+if greens.rank == 0:
+    print("\nc): Mixed boundaries with exponential decay charge")
+greens.boundary_cond = bc_task4_c
+greens.charge_dist = charge_task4_c
+poisson.bc_potential(bc_task4_c)
+poisson.charge_dist(charge_task4_c)
+poisson.convergence_check()
+
+for (i, j), name in zip(points, point_names):
+    phi_mc, err_mc = greens.parallel_potential(i, j, 100000)
+    if greens.rank == 0:
+        print(f"{name} ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm): "
+                  f"MC = {phi_mc:.4f} +/- {err_mc:.4f} V, "
+                  f"Relaxation = {poisson.phi[i,j]:.4f} V")
