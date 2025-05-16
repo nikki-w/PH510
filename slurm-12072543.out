@@ -1,0 +1,129 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"miniconda/3.12.80"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "miniconda/3.12.80"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+===================================================================================
+SLURM Job ID:            12072543
+Submit time:             Fri May 16 16:35:34 BST 2025 (Unix Epoch time: 1747409734)
+Start time:              Fri May 16 16:35:34 BST 2025 (Unix Epoch time: 1747409734)
+No. nodes:               1
+No. tasks:               16
+Job name:                assignment4
+Account:                 teaching
+QoS:                     teaching
+Partition (queue):       teaching
+Submit directory:        /users/xeb20122/PH510/Assignment 4
+Script name:             /users/xeb20122/PH510/Assignment 4/jobscript_assignment4.sh
+Master node:             wee11
+Nodes used:              wee11
+Task distribution:       
+===================================================================================
+
+************* Module assignment4
+assignment4.py:281:0: C0301: Line too long (112/100) (line-too-long)
+assignment4.py:15:0: R0902: Too many instance attributes (11/7) (too-many-instance-attributes)
+assignment4.py:20:23: W0621: Redefining name 'n' from outer scope (line 290) (redefined-outer-name)
+assignment4.py:20:26: W0621: Redefining name 'h' from outer scope (line 289) (redefined-outer-name)
+assignment4.py:63:12: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:64:16: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:77:12: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:78:16: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:88:12: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:89:16: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:120:23: W0621: Redefining name 'n' from outer scope (line 290) (redefined-outer-name)
+assignment4.py:120:26: W0621: Redefining name 'h' from outer scope (line 289) (redefined-outer-name)
+assignment4.py:137:4: R0914: Too many local variables (16/15) (too-many-locals)
+assignment4.py:149:8: W0621: Redefining name 'k' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:151:12: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:151:15: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:177:8: W0621: Redefining name 'g_lap' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:178:8: W0621: Redefining name 'g_lap_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:181:8: W0621: Redefining name 'g_charge' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:182:8: W0621: Redefining name 'g_charge_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:149:8: W0612: Unused variable 'k' (unused-variable)
+assignment4.py:186:4: R0914: Too many local variables (16/15) (too-many-locals)
+assignment4.py:190:8: W0621: Redefining name 'g_lap' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:190:15: W0621: Redefining name 'g_charge' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:190:25: W0621: Redefining name 'g_lap_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:190:36: W0621: Redefining name 'g_charge_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:195:12: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:196:16: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:219:29: W0621: Redefining name 'g_lap' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:219:36: W0621: Redefining name 'g_charge' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:219:46: W0621: Redefining name 'g_lap_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:219:62: W0621: Redefining name 'g_charge_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:231:12: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:232:16: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:255:4: R0914: Too many local variables (16/15) (too-many-locals)
+assignment4.py:262:8: W0621: Redefining name 'g_lap' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:262:15: W0621: Redefining name 'g_charge' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:262:25: W0621: Redefining name 'g_lap_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:262:36: W0621: Redefining name 'g_charge_err' from outer scope (line 309) (redefined-outer-name)
+assignment4.py:288:0: C0103: Constant name "side_length" doesn't conform to UPPER_CASE naming style (invalid-name)
+assignment4.py:289:0: C0103: Constant name "h" doesn't conform to UPPER_CASE naming style (invalid-name)
+assignment4.py:290:0: C0103: Constant name "n" doesn't conform to UPPER_CASE naming style (invalid-name)
+assignment4.py:293:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:293:13: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:293:16: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:294:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+assignment4.py:336:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:336:15: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:336:18: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:336:15: W0613: Unused argument 'i' (unused-argument)
+assignment4.py:336:18: W0613: Unused argument 'j' (unused-argument)
+assignment4.py:339:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:339:15: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:339:18: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:340:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+assignment4.py:340:7: R1714: Consider merging these comparisons with 'in' by using 'j in (0, n - 1)'. Use a set instead if elements are hashable. (consider-using-in)
+assignment4.py:339:15: W0613: Unused argument 'i' (unused-argument)
+assignment4.py:345:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:345:15: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:345:18: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:346:4: R1705: Unnecessary "elif" after "return", remove the leading "el" from "elif" (no-else-return)
+assignment4.py:356:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:356:19: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:356:22: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:356:19: W0613: Unused argument 'i' (unused-argument)
+assignment4.py:356:22: W0613: Unused argument 'j' (unused-argument)
+assignment4.py:359:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:359:19: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:359:22: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:359:19: W0613: Unused argument 'i' (unused-argument)
+assignment4.py:362:0: C0116: Missing function or method docstring (missing-function-docstring)
+assignment4.py:362:19: W0621: Redefining name 'i' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:362:22: W0621: Redefining name 'j' from outer scope (line 308) (redefined-outer-name)
+assignment4.py:446:20: E0602: Undefined variable 'phi' (undefined-variable)
+
+------------------------------------------------------------------
+Your code has been rated at 7.03/10 (previous run: 6.92/10, +0.11)
+
+Task 3: Green's Function Evaluation
+
+Point 1 (5.0cm, 5.0cm):
+Max Laplace G: 0.0054 +/- 0.0007
+Max Charge G: 0.0000 +/- 0.0000
+
+Point 2 (2.5cm, 2.5cm):
+Max Laplace G: 0.0115 +/- 0.0011
+Max Charge G: 0.0000 +/- 0.0000
+
+Point 3 (0.1cm, 2.5cm):
+Max Laplace G: 0.3621 +/- 0.0048
+Max Charge G: 0.0000 +/- 0.0000
+
+Point 4 (0.1cm, 0.1cm):
+Max Laplace G: 0.3040 +/- 0.0046
+Max Charge G: 0.0000 +/- 0.0000
+
+Task 4: Potential Calculations
+
+a): All edges +1V, uniform 10C charge
