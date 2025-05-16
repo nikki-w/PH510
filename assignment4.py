@@ -6,6 +6,7 @@ Copyright (c) [2025] [Nikki Walker]
 Assignment 4: MC evaluation of Green's functions"""
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 from mpi4py import MPI
 import montecarlo_class as MC
 
@@ -28,7 +29,7 @@ class PoissonEqtn:
         self.h = h
         self.comm = MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
-        self.size = self.comm.Get_size
+        self.size = self.comm.Get_size()
 
         # From hints, set an optimal omega when value isn't
         # defined
@@ -165,37 +166,43 @@ class GreensEqtn:
         """
         Calculates the potential using greens function
         """
-        g_lap, g_charge = self.random_walkers(start_i, start_j, n_walks)
+        g_lap, g_charge, g_lap_err, g_charge_err = self.random_walkers(start_i, start_j, n_walks)
 
         # Laplace part of equation
         boundary_sum = 0
+        boundary_err = 0
         for i in [0, (self.n-1)]:
             for j in range(self.n):
                 boundary_sum += g_lap[i, j] * self.boundary_cond(i, j)
+                boundary_err += (g_lap_err[i, j] * self.boundary_cond(i, j))**2
 
         for j in [0, (self.n-1)]:
             for i in range(1, (self.n-1)):
                 boundary_sum += g_lap[i, j] * self.boundary_cond(i, j)
+                boundary_err += (g_lap_err[i, j] * self.boundary_cond(i, j))**2
 
         # Poisson part of equation
         charge_sum = 0
+        charge_err = 0
         for i in range(1, (self.n-1)):
             for j in range(1, (self.n-1)):
                 charge_sum += g_charge[i, j] * self.charge_dist(i, j)
+                charge_err += (g_charge_err[i, j] * self.boundary_cond(i, j))**2
 
         # Calculate total potential (sum laplace and poisson)
         phi = boundary_sum + charge_sum
+        err = np.sqrt(boundary_err + charge_err)
 
-        return phi
+        return phi, err
 
     def parallel_potential(self, start_i, start_j, tot_walks=100000):
         """Parallel computation of potential using MC class"""
         # Divide up walks across processes
         mc = MC.MC(tot_walks, d=1)
-        n_walks_local = mc.n_local
+        n_walks_lo = mc.n_local
 
         # Generate walks for g_lap and g_charge
-        g_lap, g_charge = self.random_walkers(start_i, start_j, n_walks_local)
+        g_lap, g_charge, g_lap_err, g_charge_err = self.random_walkers(start_i, start_j, n_walks_lo)
 
         # Reduce results across all processes
         global_g_lap = np.zeros((self.n, self.n))
@@ -204,9 +211,59 @@ class GreensEqtn:
         self.comm.Reduce(g_charge, global_g_charge, op=MPI.SUM, root=0)
 
         # Normalise and generate results
-        if self.rank == 0:
+        if mc.rank == 0:
             global_g_lap /= tot_walks
             global_g_charge /= tot_walks
-            phi = self.potential(global_g_lap, global_g_charge)
-            return phi
-        return None
+            phi, err = self.potential(global_g_lap, global_g_charge, None, None)
+            return phi, err
+        return None, None
+
+
+# Task 3:
+# Define parameters used in all parts of task
+side_length = 0.1 #m
+h = 0.001
+n = int(side_length / h)
+
+# Assume that the boundary condition is +1V for all of task 3
+def bc_task3(i, j):
+    if i == 0 or i == (n-1) or j == 0 or j == (n-1):
+        return 1.0
+    else:
+        return 0
+
+greens = GreensEqtn(n, h, bc_task3, lambda i, j: 0) # lambda funct to temp set i and j to 0
+
+# Define list of points needed for a) - d)
+points = [(n//2, n//2), (n//4, n//4), (1, n//4), (1, 1)]
+
+if greens.rank == 0:
+    print("Task 3: Green's Function Evaluation")
+
+# Step through each point to determine answer
+for k, (i, j) in enumerate(points):
+    g_lap, g_charge = greens.random_walkers(i, j, 10000)
+
+    if greens.rank == 0:
+        g_lap_err = np.sqrt(g_lap * (1 - g_lap) / 10000)
+        g_charge_err = np.sqrt(g_charge * (1 - g_charge) / 10000)
+
+        # Results
+        print(f"\nPoint {+1}k ({(i*h*100):.1f}cm, {(j*h*100):.1f}cm):")
+        print(f"Max Laplace G: {np.max(g_lap):.4f} +/- {np.max(g_lap_err):.4f}")
+        print(f"Max Charge G: {np.max(g_charge):.4f} +/- {np.max(g_charge_err):.4f}")
+
+        # Plot of results
+        plt.figure()
+        plt.imshow(g_lap, extent=[0, 10, 0, 10], origin='lower')
+        plt.colorbar(label="Laplace Green's function")
+        plt.title(f"Laplace Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
+        plt.savefig(f"Task3_laplace_plot{k+1}.png")
+        plt.close()
+
+        plt.figure()
+        plt.imshow(g_charge, extent=[0, 10, 0, 10], origin='lower')
+        plt.colorbar(label="Charge Green's function")
+        plt.title(f"Charge Greens at ({(i*h*100):.1f}cm,{(j*h*100):.1f}cm)")
+        plt.savefig(f"Task3_charge_plot{k+1}.png")
+        plt.close()
