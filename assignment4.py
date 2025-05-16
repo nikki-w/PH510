@@ -187,3 +187,26 @@ class GreensEqtn:
         phi = boundary_sum + charge_sum
 
         return phi
+
+    def parallel_potential(self, start_i, start_j, tot_walks=100000):
+        """Parallel computation of potential using MC class"""
+        # Divide up walks across processes
+        mc = MC.MC(tot_walks, d=1)
+        n_walks_local = mc.n_local
+
+        # Generate walks for g_lap and g_charge
+        g_lap, g_charge = self.random_walkers(start_i, start_j, n_walks_local)
+
+        # Reduce results across all processes
+        global_g_lap = np.zeros((self.n, self.n))
+        global_g_charge = np.zeros((self.n, self.n))
+        self.comm.Reduce(g_lap, global_g_lap, op=MPI.SUM, root=0)
+        self.comm.Reduce(g_charge, global_g_charge, op=MPI.SUM, root=0)
+
+        # Normalise and generate results
+        if self.rank == 0:
+            global_g_lap /= tot_walks
+            global_g_charge /= tot_walks
+            phi = self.potential(global_g_lap, global_g_charge)
+            return phi
+        return None
