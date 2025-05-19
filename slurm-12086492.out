@@ -1,0 +1,83 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"miniconda/3.12.80"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "miniconda/3.12.80"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+===================================================================================
+SLURM Job ID:            12086492
+Submit time:             Mon May 19 11:56:42 BST 2025 (Unix Epoch time: 1747652202)
+Start time:              Mon May 19 11:56:42 BST 2025 (Unix Epoch time: 1747652202)
+No. nodes:               1
+No. tasks:               1
+Job name:                assignment4
+Account:                 teaching
+QoS:                     teaching
+Partition (queue):       teaching
+Submit directory:        /users/xeb20122/PH510/Assignment 4
+Script name:             /users/xeb20122/PH510/Assignment 4/jobscript_assignment4.sh
+Master node:             wee12
+Nodes used:              wee12
+Task distribution:       
+===================================================================================
+
+Task 3: Green's Function Evaluation
+
+Point 1 (5.0cm, 5.0cm):
+Max Laplace G: 0.0244 +/- 0.0015
+Max Charge G: 0.0000 +/- 0.0001
+
+Point 2 (2.5cm, 2.5cm):
+Max Laplace G: 0.0523 +/- 0.0022
+Max Charge G: 0.0000 +/- 0.0001
+
+Point 3 (0.5cm, 2.5cm):
+Max Laplace G: 0.3535 +/- 0.0048
+Max Charge G: 0.0000 +/- 0.0000
+
+Point 4 (0.5cm, 0.5cm):
+Max Laplace G: 0.3059 +/- 0.0046
+Max Charge G: 0.0000 +/- 0.0000
+
+Task 4: Potential Calculations
+
+Task 4 a): Results:
+Centre: MC = 0.0000 +/- 0.0030 V, Relaxed = 0.2162 V
+Difference: 2.16e-01 V
+Quarter: MC = 0.0000 +/- 0.0030 V, Relaxed = 0.2464 V
+Difference: 2.46e-01 V
+Edge: MC = 0.0000 +/- 0.0029 V, Relaxed = 0.7925 V
+Difference: 7.92e-01 V
+Corner: MC = 0.0000 +/- 0.0028 V, Relaxed = 1.3020 V
+Difference: 1.30e+00 V
+
+Task 4 b): Results:
+Centre: MC = 0.0000 +/- 0.0030 V, Relaxed = 5.7345 V
+Difference: 5.73e+00 V
+Quarter: MC = -0.0000 +/- 0.0030 V, Relaxed = 8.7989 V
+Difference: 8.80e+00 V
+Edge: MC = -0.0000 +/- 0.0028 V, Relaxed = 3.8840 V
+Difference: 3.88e+00 V
+Corner: MC = -0.0000 +/- 0.0028 V, Relaxed = 3.6614 V
+Difference: 3.66e+00 V
+
+Task 4 c): Results:
+Centre: MC = -0.0000 +/- 0.0075 V, Relaxed = 2.6813 V
+Difference: 2.68e+00 V
+Quarter: MC = 0.0000 +/- 0.0053 V, Relaxed = 0.0000 V
+Difference: 6.97e-06 V
+Edge: MC = 0.0000 +/- 0.0054 V, Relaxed = 1.1592 V
+Difference: 1.16e+00 V
+Corner: MC = 0.0000 +/- 0.0040 V, Relaxed = 1.0074 V
+Difference: 1.01e+00 V
+
+Task 5: Validation
+
+Validating 4a
+Relaxation converged in 4 iterations
